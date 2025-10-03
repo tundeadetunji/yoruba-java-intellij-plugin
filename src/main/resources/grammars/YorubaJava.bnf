@@ -1,41 +1,63 @@
 {
-  // Grammar-Kit header: Defines package and extends Java-like structure
-  extends "JavaParser.bnf";  // Inherit basic Java rules (classes, methods, etc.)
-  // Custom Yoruba tokens (keywords as alternatives)
+  // Grammar-Kit directives for custom names and packages
+  parserClass = "com.github.tundeadetunji.yorubajava.YorubaJavaParser";
+  elementTypeHolderClass = "com.github.tundeadetunji.yorubajava.YorubaJavaTypes";
+  parserClassPackage = "com.github.tundeadetunji.yorubajava.parser";
+  elementTypeHolderClassPackage = "com.github.tundeadetunji.yorubajava.psi";
 }
 
-// Root rule for Yoruba Java file
-yorubaJavaFile : statement* ;
+// Grammar-Kit BNF for Yoruba Java (simple Java subset with Yoruba keywords)
+// Root rule: The entire file
+yorubaJavaFile ::= (statement)* EOF ;
 
-// Yoruba Keywords (with variants; lexer will match any)
-CLASS : 'kíláàsì' | 'ìṣọ̀rí' | 'isori' | 'kilasi' ;
-PUBLIC : 'gbangba' ;
-STATIC : 'àìmì' | 'aimi' ;
-VOID : 'òfo' | 'ofo' ;
-MAIN : 'àkọ́kọ́' | 'akoko' ;
-STRING_TYPE : 'okùn' | 'okun' ;
-INT_TYPE : 'nọmba' | 'nomba' ;
-IF : 'tí' | 'ti' ;
-ELSE : 'tí kò ṣe bẹ́ẹ̀' | 'eko se bee' | 'else' ;  // Allow English fallback
-PRINT : 'tẹ' | 'te' | 'print' ;
+// Statements: Classes, methods, ifs, expressions
+statement ::= classDeclaration | methodDeclaration | ifStatement | expressionStatement | ';' ;
 
-// Basic statements (extend Java)
-statement : classDeclaration | methodDeclaration | expressionStatement | ifStatement ;
+// Class declaration
+classDeclaration ::= YORUBA_CLASS IDENTIFIER '{' (fieldDeclaration)* (methodDeclaration)* '}' ;
 
-classDeclaration : CLASS IDENTIFIER '{' fieldDeclaration* methodDeclaration* '}' ;
-fieldDeclaration : (PUBLIC)? (INT_TYPE | STRING_TYPE) IDENTIFIER '=' literal ';' ;
-methodDeclaration : PUBLIC STATIC VOID MAIN '(' STRING_TYPE '[' ']' IDENTIFIER ')' '{' statement* '}' ;
-ifStatement : IF '(' expression ')' '{' statement* '}' (ELSE '{' statement* '}')? ;
-expressionStatement : PRINT '(' STRING_LITERAL ')' ';' | assignment ';' ;
-assignment : IDENTIFIER '=' literal ;
-expression : literal | IDENTIFIER | expression '+' expression ;  // Simple arith
-literal : NUMBER | STRING_LITERAL | 'òtítọ́' | 'òdì' | 'true' | 'false' | 'null' ;  // Booleans/null
+// Field declaration (e.g., public int x = 5;)
+fieldDeclaration ::= (YORUBA_PUBLIC)? type IDENTIFIER '=' literal ';' ;
 
-// Tokens (inherited + custom)
-IDENTIFIER : [a-zA-Z_][a-zA-Z0-9_]* ;  // Supports Yoruba chars (UTF-8)
-NUMBER : [0-9]+ ;
-STRING_LITERAL : '"' [^"]* '"' ;
-WHITE_SPACE : ' ' | '\t' | '\n' | '\r' ;
-LINE_COMMENT : '//' ~[\r\n]* ;
-BLOCK_COMMENT : '/*' .*? '*/' ;
-OPERATOR_OR_SYMBOL : '+' | '-' | '*' | '/' | '=' | '(' | ')' | '{' | '}';
+// Method declaration (focus on main for simplicity)
+methodDeclaration ::= YORUBA_PUBLIC YORUBA_STATIC YORUBA_VOID YORUBA_MAIN '(' STRING_TYPE ARRAY_BRACKETS IDENTIFIER ')' '{' (statement)* '}' ;
+
+// If-else statement
+ifStatement ::= YORUBA_IF '(' expression ')' '{' (statement)* '}' (YORUBA_ELSE '{' (statement)* '}')? ;
+
+// Expression statement (print or assignment)
+expressionStatement ::= YORUBA_PRINT '(' STRING_LITERAL ')' ';' | assignment ';' ;
+
+// Assignment (e.g., x = 5;)
+assignment ::= IDENTIFIER '=' literal ;
+
+// Expression (simple: literals, IDs, + ops)
+expression ::= literal | IDENTIFIER | expression '+' expression | expression '-' expression | expression '*' expression | expression '/' expression | '(' expression ')' ;
+
+// Literals (numbers, strings, booleans, null)
+literal ::= NUMBER | STRING_LITERAL | YORUBA_BOOLEAN | YORUBA_NULL ;
+
+// Types (Yoruba variants)
+type ::= YORUBA_INT_TYPE | YORUBA_STRING_TYPE ;
+
+// Tokens: REFERENCES to lexer tokens (defined in Flex) - Renamed to avoid Java clashes
+YORUBA_CLASS ::= 'kíláàsì' | 'ìṣọ̀rí' | 'isori' | 'kilasi' ;
+YORUBA_PUBLIC ::= 'gbangba' ;
+YORUBA_STATIC ::= 'àìmì' | 'aimi' ;
+YORUBA_VOID ::= 'òfo' | 'ofo' ;
+YORUBA_MAIN ::= 'àkọ́kọ́' | 'akoko' ;
+YORUBA_STRING_TYPE ::= 'okùn' | 'okun' ;
+YORUBA_INT_TYPE ::= 'nọmba' | 'nomba' ;
+YORUBA_IF ::= 'tí' | 'ti' ;
+YORUBA_ELSE ::= 'tí kò ṣe bẹ́ẹ̀' | 'eko se bee' | 'else' ;
+YORUBA_PRINT ::= 'tẹ' | 'te' | 'print' ;
+YORUBA_BOOLEAN ::= 'òtítọ́' | 'true' | 'òdì' | 'false' ;
+YORUBA_NULL ::= 'null' ;
+
+// Other tokens (lexer-defined; no conflicts)
+IDENTIFIER, NUMBER, STRING_LITERAL, SEMICOLON, LBRACE, RBRACE, LPAREN, RPAREN, ASSIGN, PLUS, MINUS, MULT, DIV, ARRAY_BRACKETS ;
+WHITE_SPACE, LINE_COMMENT, BLOCK_COMMENT, BAD_CHARACTER ;
+
+// Associates left for expressions (prevents ambiguity)
+%left PLUS MINUS ;
+%left MULT DIV ;

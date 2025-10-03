@@ -59,9 +59,18 @@ task generateParsers(type: JavaExec) {
 
 compileJava.dependsOn generateParsers
 
+//dependencies {
+//    compileOnly 'org.jetbrains.intellij:annotations:241.15989.150'  // IntelliJ annotations for Java
+//    compileOnly 'org.jetbrains:annotations:241.15989.150'  // Alias/backup
+//    // Grammar-Kit for generation (2024.1 matches IDE; compileOnly for build-time only)
+//    compileOnly 'org.jetbrains.grammar-kit:grammar-kit:2024.1'
+//}
+
 dependencies {
-    compileOnly 'org.jetbrains.intellij:annotations:241.15989.150'  // IntelliJ annotations for Java
-    compileOnly 'org.jetbrains:annotations:241.15989.150'  // Alias/backup
-    // Grammar-Kit for generation (2024.1 matches IDE; compileOnly for build-time only)
-    compileOnly 'org.jetbrains.grammar-kit:grammar-kit:2024.1'
+    // JetBrains annotations (use 'compileOnly' but ensure classpath visibility)
+    compileOnly 'org.jetbrains:annotations:24.0.1'
+    // Alternative: If squigglies persist, add as 'implementation' temporarily (includes in all classpaths)
+    // implementation 'org.jetbrains:annotations:24.0.1'  // Uncomment if needed (lightweight anyway)
+    // Grammar-Kit (unchanged)
+    compileOnly 'org.jetbrains.grammar-kit:grammar-kit:2023.3.3'
 }
