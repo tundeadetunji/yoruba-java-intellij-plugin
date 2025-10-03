@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '1.17.0'  // Handles plugin packaging
+}
+
+group = 'com.github.tundeadetunji.yorubajava'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()  // For plugins
+    maven { url 'https://packages.jetbrains.team/maven/p/ij/intellij-dependencies' }  // JetBrains deps
+    maven { url 'https://cache-redirector.jetbrains.com/www.jetbrains.com/intellij-repository/releases' }  // SDK mirror
+    maven { url 'https://www.jetbrains.com/intellij-repository/releases' }  // Additional for Grammar-Kit
+}
+
+intellij {
+    version = '2024.1.1'  // Exact match
+    type = 'IC'  // Community Edition
+    //plugins = ['java', 'grammar-kit:2023.3']  // For Java PSI and grammar gen
+    //plugins = ['java', 'grammar-kit:2024.1']  // For Java PSI and grammar gen
+    plugins = ['java']  // For Java PSI and grammar gen
+    downloadSources = true  // For better debugging
+}
+
+patchPluginXml {
+    sinceBuild = '241.15989'  // 2024.1.1 build
+    untilBuild = '242.*'  // Up to next major
+    changeNotes = """
+        Initial release: Syntax highlighting and autocompletion for Java with Yorùbá keywords.
+        Supports variants (e.g., ìṣọ̀rí/isori for 'class').
+        Covers classes, main methods, fields, if-else, prints and others. UTF-8 for diacritics.
+        Source: https://github.com/tundeadetunji/yoruba-java-intellij-plugin
+        """
+}
+
+// Custom task for Grammar-Kit generation (runs before compile)
+task generateParsers(type: JavaExec) {
+    group = 'build'
+    description = 'Generate lexer/parser from Grammar-Kit'
+    mainClass = 'org.jetbrains.grammar.kit.GeneratorMain'
+    // Enhanced classpath: Includes runtime + compile deps (for Grammar-Kit)
+    classpath = sourceSets.main.runtimeClasspath + configurations.runtimeClasspath + configurations.compileClasspath
+    args = [
+            file('src/main/resources/grammars/YorubaJava.bnf').absolutePath,
+            file('src/main/resources/grammars/YorubaJava.flex').absolutePath,
+            file('build/generated/sources/annotationProcessor/java/main').absolutePath  // Output dir
+    ]
+    doFirst {
+        // Ensure output dir exists
+        file('build/generated/sources/annotationProcessor/java/main').mkdirs()
+    }
+    // Use local JVM
+    systemProperty 'java.home', 'C:/Program Files/Java/jdk-17.0.4.1'
+    // Error handling: Don't fail if no grammar files yet or dep missing
+    ignoreExitValue = true
+    standardOutput = System.out  // Log output for debugging
+}
+
+compileJava.dependsOn generateParsers
+
+dependencies {
+    compileOnly 'org.jetbrains.intellij:annotations:241.15989.150'  // IntelliJ annotations for Java
+    compileOnly 'org.jetbrains:annotations:241.15989.150'  // Alias/backup
+    // Grammar-Kit for generation (2024.1 matches IDE; compileOnly for build-time only)
+    compileOnly 'org.jetbrains.grammar-kit:grammar-kit:2024.1'
+}
