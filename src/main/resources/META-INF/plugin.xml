@@ -1,0 +1,14 @@
+<idea-plugin>
+    <id>com.github.tundeadetunji.yorubajava</id>
+    <name>Yoruba Java Language Support</name>
+    <vendor email="tundeadetunji2017@gmail.com" url="https://github.com/tundeadetunji/yoruba-java-intellij-plugin">Tunde Adetunji</vendor>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <lang.parserDefinition language="YorubaJava"
+                               implementationClass="com.github.tundeadetunji.yorubajava.parser.YorubaJavaParserDefinition"/>
+        <fileType name="YorubaJava" language="YorubaJava"
+                  implementationClass="com.github.tundeadetunji.yorubajava.YorubaJavaFileType" extensions="yj"/>
+    </extensions>
+
+    <depends>com.intellij.modules.lang</depends>
+</idea-plugin>

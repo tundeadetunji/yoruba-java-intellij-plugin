@@ -1,0 +1,42 @@
+// This is a generated file. Not intended for manual editing.
+package generated.psi.impl;
+
+import java.util.List;
+import org.jetbrains.annotations.*;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import static com.github.tundeadetunji.yorubajava.YorubaJavaTypes.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import generated.psi.*;
+
+public class TypeImpl extends ASTWrapperPsiElement implements Type {
+
+  public TypeImpl(@NotNull ASTNode node) {
+    super(node);
+  }
+
+  public void accept(@NotNull Visitor visitor) {
+    visitor.visitType(this);
+  }
+
+  @Override
+  public void accept(@NotNull PsiElementVisitor visitor) {
+    if (visitor instanceof Visitor) accept((Visitor)visitor);
+    else super.accept(visitor);
+  }
+
+  @Override
+  @Nullable
+  public YorubaIntType getYorubaIntType() {
+    return findChildByClass(YorubaIntType.class);
+  }
+
+  @Override
+  @Nullable
+  public YorubaStringType getYorubaStringType() {
+    return findChildByClass(YorubaStringType.class);
+  }
+
+}

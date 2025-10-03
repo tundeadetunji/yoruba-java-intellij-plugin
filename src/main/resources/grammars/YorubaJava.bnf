@@ -1,12 +1,10 @@
 {
-  // Grammar-Kit directives for custom names and packages
   parserClass = "com.github.tundeadetunji.yorubajava.YorubaJavaParser";
   elementTypeHolderClass = "com.github.tundeadetunji.yorubajava.YorubaJavaTypes";
-  parserClassPackage = "com.github.tundeadetunji.yorubajava.parser";
-  elementTypeHolderClassPackage = "com.github.tundeadetunji.yorubajava.psi";
+  parserClassPackage = "com.github.tundeadetunji.yorubajava";
+  elementTypeHolderClassPackage = "com.github.tundeadetunji.yorubajava";
 }
 
-// Grammar-Kit BNF for Yoruba Java (simple Java subset with Yoruba keywords)
 // Root rule: The entire file
 yorubaJavaFile ::= (statement)* EOF ;
 
@@ -54,10 +52,30 @@ YORUBA_PRINT ::= 'tẹ' | 'te' | 'print' ;
 YORUBA_BOOLEAN ::= 'òtítọ́' | 'true' | 'òdì' | 'false' ;
 YORUBA_NULL ::= 'null' ;
 
-// Other tokens (lexer-defined; no conflicts)
-IDENTIFIER, NUMBER, STRING_LITERAL, SEMICOLON, LBRACE, RBRACE, LPAREN, RPAREN, ASSIGN, PLUS, MINUS, MULT, DIV, ARRAY_BRACKETS ;
-WHITE_SPACE, LINE_COMMENT, BLOCK_COMMENT, BAD_CHARACTER ;
+// Explicit token declarations for lexer tokens (no expansions)
+WHITE_SPACE ::= ;
+LINE_COMMENT ::= ;
+BLOCK_COMMENT ::= ;
+BAD_CHARACTER ::= ;
 
-// Associates left for expressions (prevents ambiguity)
+// Tokens for symbols with literals
+SEMICOLON ::= ';' ;
+LBRACE ::= '{' ;
+RBRACE ::= '}' ;
+LPAREN ::= '(' ;
+RPAREN ::= ')' ;
+ASSIGN ::= '=' ;
+PLUS ::= '+' ;
+MINUS ::= '-' ;
+MULT ::= '*' ;
+DIV ::= '/' ;
+ARRAY_BRACKETS ::= '[]' ;
+
+// Tokens for identifiers and literals (no expansions)
+IDENTIFIER ::= ;
+NUMBER ::= ;
+STRING_LITERAL ::= ;
+
+// Operator precedence
 %left PLUS MINUS ;
 %left MULT DIV ;

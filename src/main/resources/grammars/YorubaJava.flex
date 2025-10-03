@@ -1,9 +1,8 @@
-package com.github.tundeadetunji.yorubajava.lexer;  // Use your group ID
+package com.github.tundeadetunji.yorubajava;  // Use your group ID
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import static com.intellij.psi.TokenType.*;
-import static com.github.tundeadetunji.yorubajava.psi.YorubaJavaTypes.*;  // Generated PSI types
+import static com.github.tundeadetunji.yorubajava.YorubaJavaTypes.*;  // Generated PSI types
 
 %%
 
